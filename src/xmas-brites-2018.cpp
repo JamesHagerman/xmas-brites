@@ -17,15 +17,25 @@ SYSTEM_MODE(AUTOMATIC);
 SerialLogHandler logHandler(LOG_LEVEL_TRACE);
 
 // IMPORTANT: Set pixel COUNT, PIN and TYPE
+
+// Easier to toggle features per platform:
+#if PLATFORM_ID == 6 // Photon
+
 #define PIXEL_PIN D2
-// #define PIXEL_COUNT 27 // short strand on top of monitor
+#define PIXEL_COUNT 27 // short strand on top of monitor
+#define PIXEL_TYPE WS2813
+
+#define D7_FPS
+
+#elif PLATFORM_ID == 10 // Electron
+#elif PLATFORM_ID == 12 // Argon
+#elif PLATFORM_ID == 13 // Boron
+#elif PLATFORM_ID == 14 // Xenon
+
+#define PIXEL_PIN D2
 #define PIXEL_COUNT 300 // Full strand
 #define PIXEL_TYPE WS2813
 
-// Easier to toggle features per platform:
-#if PLATFORM_ID == 12 // Argon
-#elif PLATFORM_ID == 13 // Boron
-#elif PLATFORM_ID == 14 // Xenon
 #define SUB_GW_MSG // Receive GW -> Node pings (for Children in mesh)
 #define NODE_PING_ENABLE // Send Node -> GW pings (for Children in mesh)
 
@@ -168,7 +178,7 @@ void draw() {
     
     // All pixels different spot on rainbow
     for(uint16_t i=0; i<strip.numPixels(); i++) {
-      hsvtorgb(&r,&g,&b,frame*4+i,sat,val);
+      hsvtorgb(&r,&g,&b,frame*2+i,sat,val);
       color = strip.Color(r, g, b);
       strip.setPixelColor(i, color);
     }
@@ -276,68 +286,3 @@ void hsvtorgb(unsigned char *r, unsigned char *g, unsigned char *b, unsigned cha
     return;
 }
 
-
-
-
-
-
-
-/*
-
-#include "neopixel.h"
-
-void setup();
-void loop();
-#line 10 "src/FancyProject.ino"
-SYSTEM_MODE(AUTOMATIC);
-
-// IMPORTANT: Set pixel COUNT, PIN and TYPE
-#define PIXEL_PIN D2
-#define PIXEL_COUNT 300
-#define PIXEL_TYPE WS2813
-
-Adafruit_NeoPixel strip(PIXEL_COUNT, PIXEL_PIN, PIXEL_TYPE);
-
-// Prototypes for local build, ok to leave in for Build IDE
-void rainbow(uint8_t wait);
-uint32_t Wheel(byte WheelPos);
-
-void setup()
-{
-  strip.begin();
-  strip.show(); // Initialize all pixels to 'off'
-}
-
-void loop()
-{
-  rainbow(0);
-}
-
-void rainbow(uint8_t wait) {
-  uint16_t i, j;
-
-  for(j=0; j<256; j++) {
-    for(i=0; i<strip.numPixels(); i++) {
-      strip.setPixelColor(i, Wheel((i+j) & 255));
-    }
-    strip.show();
-    delay(wait);
-  }
-}
-
-// Input a value 0 to 255 to get a color value.
-// The colours are a transition r - g - b - back to r.
-uint32_t Wheel(byte WheelPos) {
-  if(WheelPos < 85) {
-   return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
-  } else if(WheelPos < 170) {
-   WheelPos -= 85;
-   return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
-  } else {
-   WheelPos -= 170;
-   return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
-  }
-}
-
-
-*/
