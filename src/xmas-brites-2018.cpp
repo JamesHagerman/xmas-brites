@@ -7,7 +7,9 @@
 #include "application.h"
 #include <neopixel.h>
 
+// Need to define things before using them:
 void draw();
+void hsvtorgb(unsigned char *r, unsigned char *g, unsigned char *b, unsigned char h, unsigned char s, unsigned char v);
 
 SYSTEM_MODE(AUTOMATIC);
 //SYSTEM_THREAD(ENABLED); // This seems fragile currently
@@ -62,6 +64,13 @@ void gatewayMsgHandler(const char *event, const char *data) {
 }
 
 #endif // SUB_GW_MSG
+
+// Animation stuff
+uint32_t frame = 0;
+
+// HSV Color stuff
+uint8_t r, g, b, sat = 255, val = 255;
+uint8_t hue = 0;
 
 // old
 void rainbow(uint8_t wait);
@@ -152,21 +161,45 @@ void draw() {
         digitalWrite(D7, LOW);
     }
 #endif // D7_FPS
-    
+
+        
     // Handle LEDs:
-    static uint32_t color; 
-    currentLedIndex++;
-    if (currentLedIndex>PIXEL_COUNT) {
-        currentLedIndex = 0;
-        ledState = !ledState;
-        if (ledState) {
-            color = strip.Color(255, 0, 0);
-        } else {
-            color = strip.Color(0, 0, 255);
-        }
+    static uint32_t color;
+    
+    // All pixels different spot on rainbow
+    for(uint16_t i=0; i<strip.numPixels(); i++) {
+      hsvtorgb(&r,&g,&b,frame*4+i,sat,val);
+      color = strip.Color(r, g, b);
+      strip.setPixelColor(i, color);
     }
-    strip.setPixelColor(currentLedIndex, color);
     strip.show();
+
+    // All pixels the same color:
+    //hue += 1;
+    //hsvtorgb(&r,&g,&b,hue,sat,val);
+    //color = strip.Color(r, g, b);
+    //for(uint16_t i=0; i<strip.numPixels(); i++) {
+    //  strip.setPixelColor(i, color);
+    //}
+    //strip.show();
+
+    // Add new pixel every frame:
+    //currentLedIndex++;
+    //if (currentLedIndex>PIXEL_COUNT) {
+    //    currentLedIndex = 0;
+    //    ledState = !ledState;
+    //    if (ledState) {
+    //        color = strip.Color(0, 255, 0);
+    //    } else {
+    //        color = strip.Color(0, 0, 255);
+    //    }
+    //}
+    //strip.setPixelColor(currentLedIndex, color);
+    //strip.show();
+    // end new pixel every frame
+
+    // Increment frame counter:
+    frame += 1;
 }
 
 int apiCommand(String command) {
