@@ -12,7 +12,7 @@ void draw();
 void hsvtorgb(unsigned char *r, unsigned char *g, unsigned char *b, unsigned char h, unsigned char s, unsigned char v);
 
 SYSTEM_MODE(AUTOMATIC);
-//SYSTEM_THREAD(ENABLED); // This seems fragile currently
+SYSTEM_THREAD(ENABLED); // This seems fragile currently
 
 SerialLogHandler logHandler(LOG_LEVEL_TRACE);
 
@@ -23,6 +23,7 @@ SerialLogHandler logHandler(LOG_LEVEL_TRACE);
 
 #define PIXEL_PIN D2
 #define PIXEL_COUNT 27 // short strand on top of monitor
+//#define PIXEL_COUNT 200 // Partial strand
 #define PIXEL_TYPE WS2813
 
 #define D7_FPS
